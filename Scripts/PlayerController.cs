@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
+
 
 public class PlayerController : MonoBehaviour
 {
     public Transform camera1;
     public Rigidbody rb;
 
-    public TextMeshProUGUI healthBar;
-    public TextMeshProUGUI thirstBar;
-    public TextMeshProUGUI hungerBar;
-    public TextMeshProUGUI staminaBar;
+    public Slider healthBar;
+    public Slider thirstBar;
+    public Slider hungerBar;
+    public Slider staminaBar;
 
     public float health = 100;
     public float thirst = 0;
@@ -52,10 +52,10 @@ public class PlayerController : MonoBehaviour
             Jump();
         }
         PlayerStats();  
-        healthBar.text = "Health" + health;
-        thirstBar.text = "Thirst" + thirst;
-        hungerBar.text = "Hunger" + hunger;
-        staminaBar.text = "Stamina" + stamina;
+        healthBar.value = health/100;
+        thirstBar.value = thirst/100;
+        hungerBar.value = hunger/100;
+        staminaBar.value = stamina/100;
     }
 
     void PlayerStats()
@@ -69,9 +69,15 @@ public class PlayerController : MonoBehaviour
             stamina = 0;
         }
         else if (grounded)
-        { 
+        {
             stamina += Time.deltaTime * staminaRegenRate;
         }
+
+        if (thirst == 100 || hunger == 100)
+        {
+            health -= Time.deltaTime;
+        }
+        
     }
 
     void LookRotation()
