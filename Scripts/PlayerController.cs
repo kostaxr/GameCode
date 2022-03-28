@@ -10,13 +10,9 @@ public class PlayerController : MonoBehaviour
     public Rigidbody rb;
 
     public Slider healthBar;
-    public Slider thirstBar;
-    public Slider hungerBar;
     public Slider staminaBar;
 
     public float health = 100;
-    public float thirst = 0;
-    public float hunger = 0;
     public float stamina = 100;
 
     public float camRotationSpeed = 5f;
@@ -53,8 +49,6 @@ public class PlayerController : MonoBehaviour
         }
         PlayerStats();  
         healthBar.value = health/100;
-        thirstBar.value = thirst/100;
-        hungerBar.value = hunger/100;
         staminaBar.value = stamina/100;
     }
 
@@ -73,10 +67,6 @@ public class PlayerController : MonoBehaviour
             stamina += Time.deltaTime * staminaRegenRate;
         }
 
-        if (thirst == 100 || hunger == 100)
-        {
-            health -= Time.deltaTime;
-        }
         
     }
 
@@ -140,5 +130,13 @@ public class PlayerController : MonoBehaviour
     {
         rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
         stamina -= 20;
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (other.tag == "Enemy")
+        {
+          health -= 20;
+        }
     }
 }
