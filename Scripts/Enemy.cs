@@ -1,21 +1,24 @@
 using UnityEngine;
 using System.Collections;
 
-public class Enemy()
+public class Enemy : MonoBehaviour
 {
-   private health = 100;
+   private int health = 100;
    
     AudioSource audioSource;
 
+
    void Start()
    {
-       AudioSource = GetComponent<AudioSource>();
+       audioSource = GetComponent<AudioSource>();
+       gameObject.tag = "Enemy";
+
    }
 
 
-   void OnCollisionEnter(Collision collision)
+   private void OnTriggerEnter(Collider other)
    {
-       if (other.tag = "Player")
+       if (other.tag == "Player")
        {
            health -= 30;
        }

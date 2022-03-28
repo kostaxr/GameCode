@@ -132,7 +132,7 @@ public class PlayerController : MonoBehaviour
         stamina -= 20;
     }
 
-    void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Enemy")
         {
