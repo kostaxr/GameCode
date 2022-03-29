@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     public float health = 100;
     public float stamina = 100;
 
+    public GameObject 
+
     public float camRotationSpeed = 5f;
     public float cameraMinimumY = -60f;
     public float cameraMaximumY = 75;

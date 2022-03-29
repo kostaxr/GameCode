@@ -4,8 +4,10 @@ using System.Collections;
 public class Enemy : MonoBehaviour
 {
    private int health = 100;
+   private float speed = 100f;
+
    
-    AudioSource audioSource;
+  AudioSource audioSource;
 
 
    void Start()
@@ -15,10 +17,9 @@ public class Enemy : MonoBehaviour
 
    }
 
-
-   private void OnTriggerEnter(Collider other)
+   void OnCollisionEnter(Collision collision)
    {
-       if (other.tag == "Player")
+       if (collision.tag == "Player")
        {
            health -= 30;
        }
