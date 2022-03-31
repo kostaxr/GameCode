@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
     private float walkSpeed = 6f;
     private float runSpeed = 11f;
     private float maxSpeed = 20f;
-    private float jumpPower = 20f;
+    private float jumpPower = 10f;
     private float speed;
 
     public float extraGravity = 45;
@@ -44,10 +44,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip jumpSound = default;
 
     private bool grounded;
-    private bool walking;
-    private bool running;
-    private bool jumping;
-    private bool useFootsteps = true;
+    private bool running; 
     private Vector2 currentInput;
 
     private float footstepTimer = 0;
@@ -71,10 +68,7 @@ public class PlayerController : MonoBehaviour
         healthBar.value = health / 100;
         staminaBar.value = stamina / 100;
 
-        if (useFootsteps)
-        {
             HandleFootsteps();
-        }
     }
     void PlayerStats()
     {
@@ -133,13 +127,11 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift))
         {
             speed = runSpeed;
-            walking = false;
             running = true;
         }
         if (!Input.GetKey(KeyCode.LeftShift))
         {
             speed = walkSpeed;
-            walking = true;
             running = false;
         }
 
@@ -184,10 +176,7 @@ public class PlayerController : MonoBehaviour
         if (footstepTimer <= 0)
         {
             audioSource.PlayOneShot(footsteps[Random.Range(0, footsteps.Length - 1)]);
-            Debug.Log("AAAAAAAAA222220");
             footstepTimer = GetCurrentOffset;
         }
-
-
     }
 }
