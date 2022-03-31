@@ -15,30 +15,48 @@ public class PlayerController : MonoBehaviour
     public float health = 100;
     public float stamina = 100;
 
-    public GameObject 
 
     public float camRotationSpeed = 5f;
     public float cameraMinimumY = -60f;
     public float cameraMaximumY = 75;
     public float rotationSmoothSpeed = 10f;
 
-    public float walkSpeed = 9f;
-    public float runSpeed = 14f;
-    public float maxSpeed = 20f;
-    public float jumpPower = 30f;
+    private float walkSpeed = 6f;
+    private float runSpeed = 11f;
+    private float maxSpeed = 20f;
+    private float jumpPower = 20f;
+    private float speed;
 
     public float extraGravity = 45;
 
-    public float staminaRegenRate = 1.5f;
+    private float staminaRegenRate = 1.5f;
     float bodyRotationX;
     float camRotationY;
     Vector3 directionIntentX;
     Vector3 directionIntentY;
 
-    float speed;
+    [Header("Footstep Parameters")]
+    [SerializeField] private float baseStepSpeed = 0.5f;
+    [SerializeField] private float crouchStepMultiplier = 1.5f;
+    [SerializeField] private float springSpeedMultiplier = 0.6f;
+    [SerializeField] private AudioSource audioSource = default;
+    [SerializeField] private AudioClip[] footsteps = default;
+    [SerializeField] private AudioClip jumpSound = default;
 
-    public bool grounded;
+    private bool grounded;
+    private bool walking;
+    private bool running;
+    private bool jumping;
+    private bool useFootsteps = true;
+    private Vector2 currentInput;
 
+    private float footstepTimer = 0;
+    private float GetCurrentOffset => running ? baseStepSpeed * springSpeedMultiplier : baseStepSpeed;
+
+    void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
     void Update()
     {
         LookRotation();
@@ -49,11 +67,15 @@ public class PlayerController : MonoBehaviour
         {
             Jump();
         }
-        PlayerStats();  
-        healthBar.value = health/100;
-        staminaBar.value = stamina/100;
-    }
+        PlayerStats();
+        healthBar.value = health / 100;
+        staminaBar.value = stamina / 100;
 
+        if (useFootsteps)
+        {
+            HandleFootsteps();
+        }
+    }
     void PlayerStats()
     {
         if (stamina >= 100)
@@ -68,8 +90,6 @@ public class PlayerController : MonoBehaviour
         {
             stamina += Time.deltaTime * staminaRegenRate;
         }
-
-        
     }
 
     void LookRotation()
@@ -108,14 +128,19 @@ public class PlayerController : MonoBehaviour
         rb.velocity = directionIntentY * Input.GetAxis("Vertical") * speed + directionIntentX * Input.GetAxis("Horizontal") * speed + Vector3.up * rb.velocity.y;
         rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
 
+        currentInput = new Vector2(speed * Input.GetAxis("Vertical"), speed * Input.GetAxis("Horizontal"));
         //control our speed based on our movement state
         if (Input.GetKey(KeyCode.LeftShift))
         {
             speed = runSpeed;
+            walking = false;
+            running = true;
         }
-        if (!Input.GetKey(KeyCode.RightShift))
+        if (!Input.GetKey(KeyCode.LeftShift))
         {
             speed = walkSpeed;
+            walking = true;
+            running = false;
         }
 
     }
@@ -132,13 +157,37 @@ public class PlayerController : MonoBehaviour
     {
         rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
         stamina -= 20;
+        audioSource.PlayOneShot(jumpSound);
+
     }
 
-    private void OnTriggerEnter(Collider other)
+    void OnCollisionEnter(Collision collision)
     {
-        if (other.tag == "Enemy")
+        if (collision.gameObject.tag == "Enemy")
         {
-          health -= 20;
+            health -= 20;
         }
+    }
+    private void HandleFootsteps()
+    {
+        if (!grounded)
+        {
+            return;
+        }
+        if (currentInput == Vector2.zero)
+        {
+            return;
+        }
+
+        footstepTimer -= Time.deltaTime;
+
+        if (footstepTimer <= 0)
+        {
+            audioSource.PlayOneShot(footsteps[Random.Range(0, footsteps.Length - 1)]);
+            Debug.Log("AAAAAAAAA222220");
+            footstepTimer = GetCurrentOffset;
+        }
+
+
     }
 }

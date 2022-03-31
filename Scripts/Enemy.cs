@@ -7,7 +7,7 @@ public class Enemy : MonoBehaviour
    private float speed = 100f;
 
    
-  AudioSource audioSource;
+   AudioSource audioSource;
 
 
    void Start()
@@ -19,7 +19,7 @@ public class Enemy : MonoBehaviour
 
    void OnCollisionEnter(Collision collision)
    {
-       if (collision.tag == "Player")
+       if (collision.gameObject.tag == "Player")
        {
            health -= 30;
        }
