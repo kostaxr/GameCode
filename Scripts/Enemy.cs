@@ -10,18 +10,25 @@ public class Enemy : MonoBehaviour
    AudioSource audioSource;
 
 
-   void Start()
-   {
-       audioSource = GetComponent<AudioSource>();
-       gameObject.tag = "Enemy";
+    void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+        gameObject.tag = "Enemy";
 
-   }
+    }
+    private void Update()
+    {
+        if (health <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
 
-   void OnCollisionEnter(Collision collision)
-   {
-       if (collision.gameObject.tag == "Player")
+    void OnCollisionEnter(Collision collision)
+    {
+       if (collision.gameObject.tag == "Log")
        {
            health -= 30;
        }
-   }
+    }
 }

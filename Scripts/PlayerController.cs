@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
 
     public float health = 100;
     public float stamina = 100;
-
+    public Rigidbody arrow;
 
     public float camRotationSpeed = 5f;
     public float cameraMinimumY = -60f;
@@ -50,6 +50,7 @@ public class PlayerController : MonoBehaviour
     private float footstepTimer = 0;
     private float GetCurrentOffset => running ? baseStepSpeed * springSpeedMultiplier : baseStepSpeed;
 
+    private GameObject spawn;
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -65,6 +66,7 @@ public class PlayerController : MonoBehaviour
             Jump();
         }
         PlayerStats();
+        ShootArrow();
         healthBar.value = health / 100;
         staminaBar.value = stamina / 100;
 
@@ -177,6 +179,15 @@ public class PlayerController : MonoBehaviour
         {
             audioSource.PlayOneShot(footsteps[Random.Range(0, footsteps.Length - 1)]);
             footstepTimer = GetCurrentOffset;
+        }
+    }
+    public void ShootArrow()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            Rigidbody spawn;
+            spawn = Instantiate(arrow, transform.position, transform.rotation);
+            spawn.velocity = transform.forward * 10;
         }
     }
 }
