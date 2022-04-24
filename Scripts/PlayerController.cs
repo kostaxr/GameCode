@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 
 public class PlayerController : MonoBehaviour
@@ -11,10 +12,13 @@ public class PlayerController : MonoBehaviour
 
     public Slider healthBar;
     public Slider staminaBar;
+    
 
     public float health = 100;
     public float stamina = 100;
     public Rigidbody arrow;
+    public GameObject pickupObjectWindow;
+
 
     public float camRotationSpeed = 5f;
     public float cameraMinimumY = -60f;
@@ -35,6 +39,8 @@ public class PlayerController : MonoBehaviour
     Vector3 directionIntentX;
     Vector3 directionIntentY;
 
+    RaycastHit hit;
+
     [Header("Footstep Parameters")]
     [SerializeField] private float baseStepSpeed = 0.5f;
     [SerializeField] private float crouchStepMultiplier = 1.5f;
@@ -44,6 +50,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip jumpSound = default;
 
     private bool grounded;
+    private bool hasPickedUp;
     private bool running; 
     private Vector2 currentInput;
 
@@ -54,6 +61,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        pickupObjectWindow.SetActive(false);
     }
     void Update()
     {
@@ -61,19 +69,15 @@ public class PlayerController : MonoBehaviour
         Movement();
         ExtraGravity();
         GroundCheck();
-        if (grounded && Input.GetButtonDown("Jump") && stamina >= 20)
-        {
-            Jump();
-        }
+        Pickup();
         PlayerStats();
         ShootArrow();
-        healthBar.value = health / 100;
-        staminaBar.value = stamina / 100;
-
-            HandleFootsteps();
+        HandleFootsteps();
     }
     void PlayerStats()
     {
+        healthBar.value = health / 100;
+        staminaBar.value = stamina / 100;
         if (stamina >= 100)
         {
             stamina = 100;
@@ -136,7 +140,10 @@ public class PlayerController : MonoBehaviour
             speed = walkSpeed;
             running = false;
         }
-
+        if (grounded && Input.GetButtonDown("Jump") && stamina >= 20)
+        {
+            Jump();
+        }
     }
     void ExtraGravity()
     {
@@ -183,11 +190,31 @@ public class PlayerController : MonoBehaviour
     }
     public void ShootArrow()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0) && hasPickedUp)
         {
             Rigidbody spawn;
             spawn = Instantiate(arrow, transform.position, transform.rotation);
             spawn.velocity = transform.forward * 10;
         }
+    }
+    public void Pickup()
+    {
+       
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+         
+        if(hit.transform.tag == "Stick") 
+        {
+            pickupObjectWindow.SetActive(true);
+            if(Input.GetKeyDown(KeyCode.E))
+            { 
+                hasPickedUp = true;
+                Destroy(hit.transform.gameObject);
+            }
+        }        
+        else
+        {
+          pickupObjectWindow.SetActive(false);
+        }
+           
     }
 }
